@@ -4,11 +4,11 @@ const PlayerContext = createContext();
 
 export const usePlayerContext = () => useContext(PlayerContext);
 
-
 const initialPlayers = [
   { id: 0, name: "Player 1", balance: 1500, isBankrupt: false, properties: [] },
   { id: 1, name: "Player 2", balance: 1500, isBankrupt: false, properties: [] },
 ];
+
 
 export const PlayerProvider = ({ children }) => {
   const [players, setPlayers] = useState(initialPlayers);
@@ -33,7 +33,6 @@ export const PlayerProvider = ({ children }) => {
     setCurrentPlayerIndex(nextIndex);
   };
 
-
   const handlePayment = (playerId, amount) => {
     setPlayers(prev =>
       prev.map(p =>
@@ -52,7 +51,6 @@ export const PlayerProvider = ({ children }) => {
     );
     // TODO: Also reset property ownership on the board
   };
-
 
   return (
     <PlayerContext.Provider value={{ players, currentPlayerIndex, nextTurn, handlePayment, handleBankruptcy }}>
