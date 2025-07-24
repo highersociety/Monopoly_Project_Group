@@ -1,4 +1,3 @@
-
 import { createContext, useState, useContext, useEffect } from "react";
 
 const PlayerContext = createContext();
@@ -11,7 +10,7 @@ export function PlayerProvider({ children }) {
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  // 🔍 Auto-mark bankrupt players when money < 0
+  //  Auto-mark bankrupt players when money < 0
   useEffect(() => {
     setPlayers((prevPlayers) =>
       prevPlayers.map((player) =>
