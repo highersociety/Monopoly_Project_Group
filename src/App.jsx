@@ -1,9 +1,15 @@
-function Space(){
-return (
-    <div>
-<h1>Move 2 spaces</h1>
-    </div>
-);
-}
+import React from 'react';
+import { GameProvider } from './context/GameContext';
+import Board from './components/Board';
 
-export default Space;
+const App = () => (
+
+     <GameProvider>
+    <div className="App">
+      <h1>Monopoly Game</h1>
+      <Board />
+    </div>
+  </GameProvider>
+);
+
+export default App;
