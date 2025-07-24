@@ -1,3 +1,4 @@
+// src/context/PlayerContext.jsx
 import { createContext, useState, useContext, useEffect } from "react";
 
 const PlayerContext = createContext();
@@ -10,7 +11,7 @@ export function PlayerProvider({ children }) {
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  // Auto-check and mark bankrupt players
+  // 🔍 Auto-mark bankrupt players
   useEffect(() => {
     setPlayers((prevPlayers) =>
       prevPlayers.map((player) =>
@@ -21,7 +22,6 @@ export function PlayerProvider({ children }) {
     );
   }, [players]);
 
-  // Update a specific player's data
   const updatePlayer = (id, updates) => {
     setPlayers((prev) =>
       prev.map((player) =>
@@ -30,7 +30,6 @@ export function PlayerProvider({ children }) {
     );
   };
 
-  // Skip turns for bankrupt players
   const nextTurn = () => {
     let nextIndex = (currentPlayerIndex + 1) % players.length;
     let attempts = 0;
@@ -43,7 +42,6 @@ export function PlayerProvider({ children }) {
     setCurrentPlayerIndex(nextIndex);
   };
 
-  // Simulate rent payment or expense
   const handlePayment = (id, amount) => {
     setPlayers((prev) =>
       prev.map((player) =>
@@ -54,7 +52,6 @@ export function PlayerProvider({ children }) {
     );
   };
 
-  // Explicitly mark a player as bankrupt (if needed)
   const handleBankruptcy = (id) => {
     updatePlayer(id, { isBankrupt: true });
   };
