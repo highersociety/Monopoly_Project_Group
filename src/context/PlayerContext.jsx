@@ -10,17 +10,18 @@ export function PlayerProvider({ children }) {
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  // 🧠 Auto-check and mark bankrupt players
+  // Auto-check and mark bankrupt players
   useEffect(() => {
-    const updated = players.map((player) =>
-      player.money < 0 && !player.isBankrupt
-        ? { ...player, isBankrupt: true }
-        : player
+    setPlayers((prevPlayers) =>
+      prevPlayers.map((player) =>
+        player.money < 0 && !player.isBankrupt
+          ? { ...player, isBankrupt: true }
+          : player
+      )
     );
-    setPlayers(updated);
   }, [players]);
 
-  // 🛠 Update player fields
+  // Update a specific player's data
   const updatePlayer = (id, updates) => {
     setPlayers((prev) =>
       prev.map((player) =>
@@ -29,28 +30,44 @@ export function PlayerProvider({ children }) {
     );
   };
 
-  // ⏭️ Advance turn, skip bankrupt players
+  // Skip turns for bankrupt players
   const nextTurn = () => {
     let nextIndex = (currentPlayerIndex + 1) % players.length;
-    let tries = 0;
+    let attempts = 0;
 
-    while (players[nextIndex].isBankrupt && tries < players.length) {
+    while (players[nextIndex].isBankrupt && attempts < players.length) {
       nextIndex = (nextIndex + 1) % players.length;
-      tries++;
+      attempts++;
     }
 
     setCurrentPlayerIndex(nextIndex);
   };
 
-  const currentPlayer = players[currentPlayerIndex];
+  // Simulate rent payment or expense
+  const handlePayment = (id, amount) => {
+    setPlayers((prev) =>
+      prev.map((player) =>
+        player.id === id
+          ? { ...player, money: player.money - amount }
+          : player
+      )
+    );
+  };
+
+  // Explicitly mark a player as bankrupt (if needed)
+  const handleBankruptcy = (id) => {
+    updatePlayer(id, { isBankrupt: true });
+  };
 
   const value = {
     players,
     setPlayers,
     updatePlayer,
     currentPlayerIndex,
-    currentPlayer,
+    currentPlayer: players[currentPlayerIndex],
     nextTurn,
+    handlePayment,
+    handleBankruptcy,
   };
 
   return (
@@ -60,6 +77,6 @@ export function PlayerProvider({ children }) {
   );
 }
 
-export function usePlayers() {
+export function usePlayerContext() {
   return useContext(PlayerContext);
 }
