@@ -1,27 +1,31 @@
-import React, { useContext, useEffect } from 'react';
-import { GameContext } from '../context/GameContext';
-import useFetchSpace from '../hooks/useFetchSpace';
+import { useEffect, useState } from "react";
 
-const SpaceInfo = () => {
-  const { playerPosition, setCurrentSpace } = useContext(GameContext);
-  const space = useFetchSpace(playerPosition);
+function SpaceInfo() {
+  const [spaces, setSpaces] = useState(null);
 
- 
   useEffect(() => {
-    if (space) {
-      setCurrentSpace(space);
-    } 
-     }, [space, setCurrentSpace]);
+    fetch("http://localhost:3000/spaces")
+      .then((res) => res.json())
+      .then(setSpaces)
+      .catch((err) => {
+        console.error("Error fetching spaces:", err);
+      });
+  }, []);
 
-  if (!space) return <p>Loading space info...</p>;
+  if (!spaces) return <p>Loading...</p>;
 
-   return (
+  return (
     <div>
-      <h3>You landed on: {space.name}</h3>
-      <p>Type: {space.type}</p>
-      <p>Description: {space.description || "No extra action yet."}</p>
+      <h2>Board Spaces</h2>
+      <ul>
+        {spaces.map((space) => (
+          <li key={space.id}>
+            <strong>{space.name}</strong> — {space.type}
+          </li>
+        ))}
+      </ul>
     </div>
   );
-};
+}
 
 export default SpaceInfo;
