@@ -1,0 +1,10 @@
+.bankrupt-label {
+  color: red;
+  font-weight: bold;
+}
+
+.player-card.bankrupt {
+  opacity: 0.6;
+  background-color: #f0f0f0;
+  border: 2px dashed red;
+}

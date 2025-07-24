@@ -21,4 +21,3 @@ const PlayerPanel = () => {
 
 export default PlayerPanel;
 
-</div>
