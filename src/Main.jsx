@@ -1,5 +1,10 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App position={0} /> {/* Or any other starting position */}
+    <App />
   </React.StrictMode>
 );
+import './style.css';
