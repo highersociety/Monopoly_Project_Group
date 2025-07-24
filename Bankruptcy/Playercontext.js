@@ -1,60 +1,66 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 const PlayerContext = createContext();
 
-export const usePlayerContext = () => useContext(PlayerContext);
+export function PlayerProvider({ children }) {
+  const [players, setPlayers] = useState([
+    { id: 1, name: "Player 1", money: 1500, isBankrupt: false },
+    { id: 2, name: "Player 2", money: 1500, isBankrupt: false },
+  ]);
 
-const initialPlayers = [
-  { id: 0, name: "Player 1", balance: 1500, isBankrupt: false, properties: [] },
-  { id: 1, name: "Player 2", balance: 1500, isBankrupt: false, properties: [] },
-];
-
-
-export const PlayerProvider = ({ children }) => {
-  const [players, setPlayers] = useState(initialPlayers);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  // Detect and flag bankrupt players
-  useEffect(() => {
-    setPlayers(prevPlayers =>
-      prevPlayers.map(player => ({
-        ...player,
-        isBankrupt: player.balance < 0 ? true : player.isBankrupt
-      }))
+  const updatePlayer = (id, updates) => {
+    setPlayers((prev) =>
+      prev.map((player) =>
+        player.id === id ? { ...player, ...updates } : player
+      )
     );
-  }, [players]);
+  };
+
+  const handlePayment = (id, amount) => {
+    setPlayers((prev) =>
+      prev.map((player) =>
+        player.id === id
+          ? {
+              ...player,
+              money: player.money - amount,
+              isBankrupt: player.money - amount < 0,
+            }
+          : player
+      )
+    );
+  };
+
+  const handleBankruptcy = (id) => {
+    updatePlayer(id, { isBankrupt: true });
+  };
 
   const nextTurn = () => {
     let nextIndex = currentPlayerIndex;
     do {
       nextIndex = (nextIndex + 1) % players.length;
-    } while (players[nextIndex].isBankrupt);
+    } while (players[nextIndex].isBankrupt && nextIndex !== currentPlayerIndex);
 
     setCurrentPlayerIndex(nextIndex);
   };
 
-  const handlePayment = (playerId, amount) => {
-    setPlayers(prev =>
-      prev.map(p =>
-        p.id === playerId ? { ...p, balance: p.balance - amount } : p
-      )
-    );
-  };
-
-  const handleBankruptcy = (playerId) => {
-    setPlayers(prev =>
-      prev.map(p =>
-        p.id === playerId
-          ? { ...p, isBankrupt: true, properties: [] } // clear owned properties
-          : p
-      )
-    );
-    // TODO: Also reset property ownership on the board
+  const value = {
+    players,
+    updatePlayer,
+    handlePayment,
+    handleBankruptcy,
+    currentPlayerIndex,
+    nextTurn,
   };
 
   return (
-    <PlayerContext.Provider value={{ players, currentPlayerIndex, nextTurn, handlePayment, handleBankruptcy }}>
+    <PlayerContext.Provider value={value}>
       {children}
     </PlayerContext.Provider>
   );
-};
+}
+
+export function usePlayers() {
+  return useContext(PlayerContext);
+}
