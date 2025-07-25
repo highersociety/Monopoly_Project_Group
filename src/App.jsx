@@ -13,7 +13,7 @@ function App() {
       <ul>
         {players.map((player) => (
           <li key={player.id}>
-            {player.name} — 💰 ${player.money}
+            {player.name} —  ${player.money}
             {player.isBankrupt && <strong> — BANKRUPT</strong>}
           </li>
         ))}
