@@ -1,5 +1,5 @@
+import React, { createContext, useState, useContext } from "react";
 
-import React, { createContext, useState, useContext, useEffect } from "react";
 const PlayerContext = createContext();
 
 export function PlayerProvider({ children }) {
@@ -10,20 +10,59 @@ export function PlayerProvider({ children }) {
 
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  //  Auto-mark bankrupt players when money < 0
- const handlePayment = (id, amount) => {
-  setPlayers((prev) =>
-    prev.map((player) => {
-      if (player.id === id) {
-        const newMoney = player.money - amount;
-        return {
-          ...player,
-          money: newMoney,
-          isBankrupt: newMoney < 0, // 👈 Auto-mark bankrupt
-        };
-      }
-      return player;
-    })
-  );
-};
+  const handlePayment = (id, amount) => {
+    setPlayers((prev) =>
+      prev.map((player) => {
+        if (player.id === id) {
+          const newMoney = player.money - amount;
+          return {
+            ...player,
+            money: newMoney,
+            isBankrupt: newMoney < 0,
+          };
+        }
+        return player;
+      })
+    );
+  };
 
+  const nextTurn = () => {
+    let nextIndex = (currentPlayerIndex + 1) % players.length;
+    let attempts = 0;
+
+    while (players[nextIndex].isBankrupt && attempts < players.length) {
+      nextIndex = (nextIndex + 1) % players.length;
+      attempts++;
+    }
+
+    setCurrentPlayerIndex(nextIndex);
+  };
+
+  const updatePlayer = (id, updates) => {
+    setPlayers((prev) =>
+      prev.map((player) =>
+        player.id === id ? { ...player, ...updates } : player
+      )
+    );
+  };
+
+  const value = {
+    players,
+    setPlayers,
+    currentPlayerIndex,
+    currentPlayer: players[currentPlayerIndex],
+    handlePayment,
+    updatePlayer,
+    nextTurn,
+  };
+
+  return (
+    <PlayerContext.Provider value={value}>
+      {children}
+    </PlayerContext.Provider>
+  );
+}
+
+export function usePlayerContext() {
+  return useContext(PlayerContext);
+}
