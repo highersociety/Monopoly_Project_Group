@@ -1,66 +1,32 @@
-import { createContext, useContext, useState } from "react";
+import { usePlayers } from "../context/PlayerContext";
 
-const PlayerContext = createContext();
-
-export function PlayerProvider({ children }) {
-  const [players, setPlayers] = useState([
-    { id: 1, name: "Player 1", money: 1500, isBankrupt: false },
-    { id: 2, name: "Player 2", money: 1500, isBankrupt: false },
-  ]);
-
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-
-  const updatePlayer = (id, updates) => {
-    setPlayers((prev) =>
-      prev.map((player) =>
-        player.id === id ? { ...player, ...updates } : player
-      )
-    );
-  };
-
-  const handlePayment = (id, amount) => {
-    setPlayers((prev) =>
-      prev.map((player) =>
-        player.id === id
-          ? {
-              ...player,
-              money: player.money - amount,
-              isBankrupt: player.money - amount < 0,
-            }
-          : player
-      )
-    );
-  };
-
-  const handleBankruptcy = (id) => {
-    updatePlayer(id, { isBankrupt: true });
-  };
-
-  const nextTurn = () => {
-    let nextIndex = currentPlayerIndex;
-    do {
-      nextIndex = (nextIndex + 1) % players.length;
-    } while (players[nextIndex].isBankrupt && nextIndex !== currentPlayerIndex);
-
-    setCurrentPlayerIndex(nextIndex);
-  };
-
-  const value = {
+const GameBoard = () => {
+  const {
     players,
-    updatePlayer,
-    handlePayment,
-    handleBankruptcy,
     currentPlayerIndex,
+    handlePayment,
     nextTurn,
+  } = usePlayers();
+
+  const currentPlayer = players[currentPlayerIndex];
+
+  const forceBankruptcy = () => {
+    const largeRent = 2000; // More than starting balance
+    handlePayment(currentPlayer.id, largeRent);
+    nextTurn(); // Move to next player's turn
   };
 
   return (
-    <PlayerContext.Provider value={value}>
-      {children}
-    </PlayerContext.Provider>
-  );
-}
+    <div>
+      <h2>Current Turn: {currentPlayer.name}</h2>
+      <p>Balance: ${currentPlayer.money}</p>
+      <p>Status: {currentPlayer.isBankrupt ? "💀 Bankrupt" : "Active"}</p>
 
-export function usePlayers() {
-  return useContext(PlayerContext);
-}
+      <button onClick={forceBankruptcy} disabled={currentPlayer.isBankrupt}>
+        Pay Rent (Force Bankruptcy)
+      </button>
+    </div>
+  );
+};
+
+export default GameBoard;
