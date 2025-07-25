@@ -1,6 +1,5 @@
-import React from "react";
-import { createContext, useState, useContext, useEffect } from "react";
 
+import React, { createContext, useState, useContext, useEffect } from "react";
 const PlayerContext = createContext();
 
 export function PlayerProvider({ children }) {
